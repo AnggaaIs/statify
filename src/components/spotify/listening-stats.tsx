@@ -36,19 +36,16 @@ export function ListeningStats() {
       };
     }
 
-    // Calculate total listening time (estimate based on track durations)
     const totalListeningTime = topTracks.reduce(
       (acc, track) => acc + track.duration_ms,
       0
     );
 
-    // Count unique artists
     const uniqueArtistsSet = new Set();
     topTracks.forEach((track) => {
       track.artists.forEach((artist) => uniqueArtistsSet.add(artist.name));
     });
 
-    // Extract genres from top artists
     const genreCount: { [key: string]: number } = {};
     topArtists.forEach((artist) => {
       artist.genres.forEach((genre) => {
@@ -61,7 +58,6 @@ export function ListeningStats() {
       .slice(0, 5)
       .map(([genre, count]) => ({ genre, count }));
 
-    // Calculate average popularity
     const averagePopularity =
       topTracks.length > 0
         ? Math.round(
@@ -70,10 +66,8 @@ export function ListeningStats() {
           )
         : 0;
 
-    // Count explicit content
     const explicitContent = topTracks.filter((track) => track.explicit).length;
 
-    // Recent activity (last 24 hours)
     const last24Hours = Date.now() - 24 * 60 * 60 * 1000;
     const recentActivity = recentlyPlayed.filter(
       (item) => new Date(item.played_at).getTime() > last24Hours

@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useAuth } from "@/lib/auth/context";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -8,6 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   AlertCircle,
   SparklesIcon,
@@ -18,7 +20,7 @@ import {
   PlayIcon,
 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginContent() {
   const { user, loading, signInWithSpotify } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -289,5 +291,112 @@ export default function LoginPage() {
 
       <Footer />
     </div>
+  );
+}
+
+function LoginFallback() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-background to-green-50/30 dark:from-green-950/20 dark:via-background dark:to-green-950/10">
+      <Navbar variant="landing" />
+
+      <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left Side - Login Form Skeleton */}
+            <div className="max-w-md mx-auto lg:mx-0">
+              <div className="text-center lg:text-left mb-8">
+                <Skeleton className="h-6 w-24 mb-4" />
+                <Skeleton className="h-10 w-full mb-4" />
+                <Skeleton className="h-6 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
+
+              <Card className="border-green-500/20 shadow-lg">
+                <CardContent className="p-6">
+                  <Skeleton className="h-14 w-full mb-6" />
+
+                  <div className="space-y-3 mb-6">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full" />
+                  </div>
+
+                  <div className="pt-4 border-t border-border">
+                    <Skeleton className="h-3 w-full" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Side - Features Preview Skeleton */}
+            <div className="hidden lg:block">
+              <Card className="border-2 border-green-500/20 overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 p-8">
+                    <div className="mb-6">
+                      <Skeleton className="h-6 w-24 mb-4" />
+                      <Skeleton className="h-8 w-48 mb-2" />
+                      <Skeleton className="h-5 w-full" />
+                    </div>
+
+                    <div className="space-y-4">
+                      {/* Now Playing Preview Skeleton */}
+                      <Card className="bg-card/50 backdrop-blur-sm">
+                        <CardContent className="p-4">
+                          <Skeleton className="h-5 w-24 mb-3" />
+                          <div className="flex items-center gap-3">
+                            <Skeleton className="w-12 h-12 rounded-lg" />
+                            <div className="flex-1">
+                              <Skeleton className="h-4 w-32 mb-1" />
+                              <Skeleton className="h-3 w-24 mb-2" />
+                              <Skeleton className="h-1 w-full" />
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Stats Preview Skeleton */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <Card className="bg-card/50 backdrop-blur-sm">
+                          <CardContent className="p-3">
+                            <Skeleton className="h-3 w-16 mb-1" />
+                            <Skeleton className="h-6 w-8 mb-1" />
+                            <Skeleton className="h-3 w-12" />
+                          </CardContent>
+                        </Card>
+                        <Card className="bg-card/50 backdrop-blur-sm">
+                          <CardContent className="p-3">
+                            <Skeleton className="h-3 w-16 mb-1" />
+                            <Skeleton className="h-6 w-8 mb-1" />
+                            <Skeleton className="h-3 w-12" />
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Features List Skeleton */}
+                      <div className="space-y-2 mt-6">
+                        {[1, 2, 3, 4].map((i) => (
+                          <Skeleton key={i} className="h-4 w-full" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginContent />
+    </Suspense>
   );
 }
