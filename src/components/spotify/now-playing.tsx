@@ -1,62 +1,104 @@
 "use client";
 
-import { useSpotify } from "@/lib/hooks/spotify";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import { useSpotify } from "@/lib/spotify/useSpotify";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  ExternalLinkIcon,
-  MusicIcon,
-  VolumeXIcon,
-  Volume2Icon,
-  MicIcon,
+  Play,
+  Pause,
+  SkipForward,
+  SkipBack,
+  Volume2,
+  ExternalLink,
+  RefreshCw,
 } from "lucide-react";
-import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 
-export function NowPlaying() {
-  const { nowPlaying, loading, error } = useSpotify();
-  const [progress, setProgress] = useState(0);
-  const [hasInitialData, setHasInitialData] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    if (nowPlaying && !hasInitialData) {
-      setHasInitialData(true);
-    }
-  }, [nowPlaying, hasInitialData]);
-
-  useEffect(() => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-    }
-
-    if (!nowPlaying?.is_playing || !nowPlaying?.item) {
-      return;
-    }
-
-    setProgress(nowPlaying.progress_ms || 0);
-
-    intervalRef.current = setInterval(() => {
-      setProgress((prev) => {
-        const newProgress = prev + 1000;
-        const maxProgress = nowPlaying.item!.duration_ms;
-
-        if (newProgress >= maxProgress) {
-          return maxProgress;
-        }
-
-        return newProgress;
-      });
-    }, 1000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+interface NowPlayingData {
+  is_playing: boolean;
+  current_track: {
+    name: string;
+    artist: string;
+    album: string;
+    duration_ms: number;
+    progress_ms: number;
+    external_urls: {
+      spotify: string;
     };
-  }, [nowPlaying?.is_playing, nowPlaying?.item, nowPlaying?.progress_ms]);
+    images: Array<{
+      url: string;
+      height: number;
+      width: number;
+    }>;
+    preview_url: string | null;
+    track_id: string;
+    uri: string;
+  } | null;
+  device: {
+    name: string;
+    type: string;
+    volume_percent: number;
+  };
+  context: any;
+}
+
+export function NowPlayingCard() {
+  const { get_now_playing } = useSpotify();
+  const [nowPlaying, setNowPlaying] = useState<NowPlayingData | null>(null);
+  const [progress, setProgress] = useState(0);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  const fetchNowPlaying = async (isBackground = false) => {
+    try {
+      const data = (await get_now_playing()) as NowPlayingData;
+
+      setNowPlaying(data);
+
+      if (data?.current_track?.progress_ms) {
+        setProgress(data.current_track.progress_ms);
+      }
+    } catch (error) {
+      console.error("Error fetching now playing:", error);
+    } finally {
+      if (isInitialLoading) {
+        setIsInitialLoading(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchNowPlaying(false);
+
+    const interval = setInterval(() => {
+      fetchNowPlaying(true);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (nowPlaying?.is_playing && nowPlaying?.current_track?.progress_ms) {
+      const interval = setInterval(() => {
+        setProgress((prev) => {
+          const newProgress = prev + 1000;
+          return Math.min(
+            newProgress,
+            nowPlaying.current_track?.duration_ms || 0
+          );
+        });
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [nowPlaying?.is_playing, nowPlaying?.current_track?.duration_ms]);
+
+  useEffect(() => {
+    if (nowPlaying?.current_track?.progress_ms !== undefined) {
+      setProgress(nowPlaying.current_track.progress_ms);
+    }
+  }, [nowPlaying?.current_track?.track_id]);
 
   const formatTime = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
@@ -64,20 +106,27 @@ export function NowPlaying() {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const progressPercentage = nowPlaying?.item
-    ? (progress / nowPlaying.item.duration_ms) * 100
-    : 0;
+  const getAlbumArt = () => {
+    if (!nowPlaying?.current_track?.images?.length) return null;
+    return nowPlaying.current_track.images[0]?.url;
+  };
 
-  if (loading && !hasInitialData) {
+  if (isInitialLoading) {
     return (
-      <Card className="w-full backdrop-blur-sm">
-        <CardContent className="p-6">
+      <Card className="w-full max-w-none mx-0 bg-gradient-to-br from-green-50/20 via-background to-green-50/10 dark:from-green-950/20 dark:via-background dark:to-green-900/10 border-green-200/30 dark:border-green-800/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-muted animate-pulse" />
+            Now Playing
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="flex items-center space-x-4">
-            <Skeleton className="h-20 w-20 rounded-md" />
+            <div className="w-16 h-16 bg-muted rounded-lg animate-pulse" />
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-5 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
-              <Skeleton className="h-3 w-full" />
+              <div className="h-4 bg-muted rounded animate-pulse" />
+              <div className="h-3 bg-muted rounded w-3/4 animate-pulse" />
+              <div className="h-2 bg-muted rounded animate-pulse" />
             </div>
           </div>
         </CardContent>
@@ -85,116 +134,113 @@ export function NowPlaying() {
     );
   }
 
-  if (error) {
+  if (!nowPlaying?.current_track) {
     return (
-      <Card className="w-full border-destructive/50 backdrop-blur-sm">
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-2">
-            <MusicIcon className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              Failed to load
-            </span>
+      <Card className="w-full max-w-none mx-0 flex flex-col bg-gradient-to-br from-green-50/20 via-background to-green-50/10 dark:from-green-950/20 dark:via-background dark:to-green-900/10 border-green-200/30 dark:border-green-800/30">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-muted" />
+            Now Playing
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-lg flex items-center justify-center">
+              <Play className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground">No music playing</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Start playing music on Spotify to see it here
+            </p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  if (!nowPlaying?.is_playing || !nowPlaying?.item) {
-    return (
-      <Card className="w-full backdrop-blur-sm border-muted/50">
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-2">
-            <VolumeXIcon className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">
-              No music playing right now
-            </span>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const { item } = nowPlaying;
+  const progressPercentage = nowPlaying.current_track.duration_ms
+    ? (progress / nowPlaying.current_track.duration_ms) * 100
+    : 0;
 
   return (
-    <Card className="w-full bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent border-green-500/20 backdrop-blur-sm shadow-lg">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <Badge
-            variant="secondary"
-            className="bg-green-500/10 text-green-600 border-green-500/20"
-          >
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2" />
-            <Volume2Icon className="h-3 w-3 mr-1" />
-            Now Playing
-          </Badge>
-
-          <div className="flex items-center gap-2">
-            {nowPlaying.device && (
-              <Badge variant="outline" className="text-xs">
-                {nowPlaying.device.name}
-              </Badge>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-6">
-          <div className="relative flex-shrink-0">
-            <Image
-              src={item.album.images[0]?.url || "/placeholder-album.png"}
-              alt={item.album.name}
-              width={80}
-              height={80}
-              className="rounded-lg shadow-lg"
-              priority
+    <Card className="w-full max-w-none mx-0 flex flex-col bg-gradient-to-br from-green-50/20 via-background to-green-50/10 dark:from-green-950/20 dark:via-background dark:to-green-900/10 border-green-200/30 dark:border-green-800/30">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <div
+            className={`w-4 h-4 rounded-full ${
+              nowPlaying.is_playing ? "bg-green-500 animate-pulse" : "bg-muted"
+            }`}
+          />
+          {nowPlaying.is_playing ? "Now Playing" : "Paused"}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="flex-1 flex flex-col justify-between space-y-4">
+        {/* Track Info */}
+        <div className="flex items-center space-x-4">
+          <Avatar className="w-20 h-20 rounded-lg">
+            <AvatarImage
+              src={getAlbumArt() || ""}
+              alt={nowPlaying.current_track.album}
+              className="object-cover"
             />
-            <div className="absolute inset-0 bg-black/10 rounded-lg" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg" />
-          </div>
+            <AvatarFallback className="rounded-lg">
+              <Play className="w-8 h-8" />
+            </AvatarFallback>
+          </Avatar>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-lg text-foreground truncate mb-1">
-              {item.name}
+            <h3 className="font-semibold text-xl truncate">
+              {nowPlaying.current_track.name}
             </h3>
-            <p className="text-muted-foreground truncate mb-1">
-              {item.artists.map((artist) => artist.name).join(", ")}
+            <p className="text-muted-foreground text-lg truncate">
+              {nowPlaying.current_track.artist}
             </p>
             <p className="text-sm text-muted-foreground truncate">
-              {item.album.name}
+              {nowPlaying.current_track.album}
             </p>
-
-            {item.explicit && (
-              <Badge variant="secondary" className="text-xs mt-2">
-                Explicit
-              </Badge>
-            )}
           </div>
 
-          <div className="flex-shrink-0 flex gap-2">
-            <a
-              href={item.external_urls.spotify}
+          <div className="flex flex-col items-end gap-2">
+            <Link
+              href={nowPlaying.current_track.external_urls.spotify}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors bg-green-500/10 hover:bg-green-500/20 px-3 py-2 rounded-lg"
             >
-              <span className="text-sm font-medium hidden sm:inline">Open</span>
-              <ExternalLinkIcon className="h-4 w-4" />
-            </a>
+              <Button variant="outline" size="icon">
+                <ExternalLink className="w-4 h-4" />
+              </Button>
+            </Link>
           </div>
         </div>
 
-        {/* Enhanced Progress Bar */}
-        <div className="mt-6 space-y-3">
-          <div className="w-full bg-muted/50 rounded-full h-2 overflow-hidden">
+        {/* Progress Bar */}
+        <div className="space-y-3">
+          <div className="flex justify-between text-sm text-muted-foreground">
+            <span>{formatTime(progress)}</span>
+            <span>{formatTime(nowPlaying.current_track.duration_ms)}</span>
+          </div>
+          <div className="w-full bg-muted rounded-full h-2">
             <div
-              className="bg-gradient-to-r from-green-500 to-green-400 h-2 rounded-full transition-all duration-1000 ease-linear shadow-sm"
+              className="bg-green-500 h-2 rounded-full transition-all duration-1000"
               style={{ width: `${Math.min(progressPercentage, 100)}%` }}
             />
           </div>
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span className="font-mono">{formatTime(progress)}</span>
-            <span className="font-mono">{formatTime(item.duration_ms)}</span>
+        </div>
+
+        {/* Device Info */}
+        <div className="flex items-center justify-between text-sm text-muted-foreground pt-2">
+          <div className="flex items-center gap-2">
+            <Volume2 className="w-4 h-4" />
+            <span>
+              {nowPlaying.device?.name
+                ? `Playing on ${nowPlaying.device.name}`
+                : "No active device"}
+            </span>
+            {nowPlaying.device?.volume_percent && (
+              <span className="ml-2">
+                • {nowPlaying.device.volume_percent}%
+              </span>
+            )}
           </div>
         </div>
       </CardContent>

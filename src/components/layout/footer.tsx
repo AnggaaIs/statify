@@ -1,122 +1,129 @@
-"use client";
-
-import {
-  MusicIcon,
-  GithubIcon,
-  TwitterIcon,
-  InstagramIcon,
-} from "lucide-react";
+import { Github, Twitter, Mail } from "lucide-react";
+import Link from "next/link";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <MusicIcon className="h-6 w-6 text-green-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-foreground">Statify</h3>
-                <p className="text-sm text-muted-foreground">
-                  Your Spotify Analytics
-                </p>
-              </div>
-            </div>
-            <p className="text-muted-foreground mb-4 max-w-md">
-              Discover insights about your music taste and listening habits with
-              beautiful, real-time analytics. Completely free forever.
+    <footer className="border-t bg-background">
+      <div className="container mx-auto max-w-7xl px-6 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="col-span-1 md:col-span-2">
+            <h3 className="text-lg font-semibold mb-4">Statify</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Your personal music statistics dashboard. Discover insights into
+              your listening habits and explore your musical journey.
             </p>
-            <div className="flex items-center gap-4">
-              <a
+            <div className="flex space-x-4">
+              <Link
                 href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <GithubIcon className="h-5 w-5" />
-              </a>
-              <a
+                <Github className="h-5 w-5" />
+                <span className="sr-only">GitHub</span>
+              </Link>
+              <Link
                 href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <TwitterIcon className="h-5 w-5" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                <Twitter className="h-5 w-5" />
+                <span className="sr-only">Twitter</span>
+              </Link>
+              <Link
+                href="mailto:contact@statify.com"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <InstagramIcon className="h-5 w-5" />
-              </a>
+                <Mail className="h-5 w-5" />
+                <span className="sr-only">Email</span>
+              </Link>
             </div>
           </div>
 
+          {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Product</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <h4 className="text-sm font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2 text-sm">
               <li>
-                <a
-                  href="#features"
-                  className="hover:text-foreground transition-colors"
+                <Link
+                  href="/"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Features
-                </a>
+                  Home
+                </Link>
               </li>
               <li>
-                <a
-                  href="#demo"
-                  className="hover:text-foreground transition-colors"
+                <Link
+                  href="/dashboard"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Demo
-                </a>
+                  Dashboard
+                </Link>
               </li>
               <li>
-                <a
-                  href="/auth/login"
-                  className="hover:text-foreground transition-colors"
+                <Link
+                  href="/statistics"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Sign In
-                </a>
+                  Statistics
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/profile"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Profile
+                </Link>
               </li>
             </ul>
           </div>
 
+          {/* Support */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <h4 className="text-sm font-semibold mb-4">Support</h4>
+            <ul className="space-y-2 text-sm">
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  About
-                </a>
+                <Link
+                  href="/help"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Help Center
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Privacy
-                </a>
+                <Link
+                  href="/privacy-policy"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Privacy Policy
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Terms
-                </a>
+                <Link
+                  href="/terms-of-service"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Terms of Service
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Support
-                </a>
+                <Link
+                  href="/contact"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Contact Us
+                </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-          <p>
-            &copy; 2024 Statify. All rights reserved. Made with ❤️ for music
-            lovers.
+        {/* Bottom Section */}
+        <div className="border-t mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} Statify. All rights reserved.
+          </p>
+          <p className="text-sm text-muted-foreground mt-2 md:mt-0">
+            Made with ❤️ for music lovers
           </p>
         </div>
       </div>

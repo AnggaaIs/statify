@@ -1,52 +1,122 @@
-import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
+import { SpotifyAPI } from "@/lib/spotify/client";
+import { ApiResponseBuilder } from "@/lib/api/response";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    const spotify = new SpotifyAPI(true);
+    const current_track = await spotify.getCurrentlyPlaying();
 
-    if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { data: session } = await supabase.auth.getSession();
-    const provider_token = session.session?.provider_token;
-
-    if (!provider_token) {
-      return NextResponse.json(
-        { error: "No Spotify token found" },
-        { status: 401 }
+    if (!current_track) {
+      return ApiResponseBuilder.success(
+        {
+          is_playing: false,
+          current_track: null,
+        },
+        "No track currently playing"
       );
     }
 
-    const response = await fetch(
-      "https://api.spotify.com/v1/me/player/currently-playing",
-      {
-        headers: {
-          Authorization: `Bearer ${provider_token}`,
-        },
-      }
+    const response_data = {
+      is_playing: current_track.is_playing,
+      current_track: {
+        name: current_track.item?.name,
+        artist: current_track.item?.artists
+          ?.map((artist: any) => artist.name)
+          .join(", "),
+        album: current_track.item?.album?.name,
+        duration_ms: current_track.item?.duration_ms,
+        progress_ms: current_track.progress_ms,
+        external_urls: current_track.item?.external_urls,
+        images: current_track.item?.album?.images,
+        preview_url: current_track.item?.preview_url,
+        track_id: current_track.item?.id,
+        uri: current_track.item?.uri,
+      },
+      device: {
+        name: current_track.device?.name,
+        type: current_track.device?.type,
+        volume_percent: current_track.device?.volume_percent,
+      },
+      context: current_track.context,
+    };
+
+    return ApiResponseBuilder.success(
+      response_data,
+      "Currently playing track retrieved successfully"
     );
-
-    if (response.status === 204) {
-      return NextResponse.json({ is_playing: false, item: null });
-    }
-
-    if (!response.ok) {
-      throw new Error(`Spotify API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching now playing:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch now playing" },
-      { status: 500 }
-    );
+    console.error("Now playing error:", error);
+
+    if (error instanceof Error) {
+      const errorMessage = error.message;
+
+      switch (true) {
+        case errorMessage === "NO_ACCESS_TOKEN":
+          return ApiResponseBuilder.unauthorized(
+            "Spotify access token not found. Please login again."
+          );
+
+        case errorMessage === "TOKEN_EXPIRED":
+          return ApiResponseBuilder.tokenExpired(
+            "Your Spotify session has expired. Please login again to continue."
+          );
+
+        case errorMessage === "INVALID_TOKEN":
+          return ApiResponseBuilder.unauthorized(
+            "Invalid Spotify token. Please login again."
+          );
+
+        case errorMessage.startsWith("INSUFFICIENT_SCOPE"):
+          const requiredScope =
+            errorMessage.split(":")[1] || "user-read-currently-playing";
+          return ApiResponseBuilder.forbidden(
+            `Missing required Spotify permission: ${requiredScope}. Please reconnect your account with proper permissions.`
+          );
+
+        case errorMessage === "PREMIUM_REQUIRED":
+          return ApiResponseBuilder.error(
+            "This feature requires Spotify Premium subscription.",
+            402,
+            "PREMIUM_REQUIRED"
+          );
+
+        case errorMessage === "RESOURCE_NOT_FOUND":
+          return ApiResponseBuilder.error(
+            "No active Spotify device found. Please start playing music on Spotify.",
+            404,
+            "NO_ACTIVE_DEVICE"
+          );
+
+        case errorMessage.startsWith("RATE_LIMITED"):
+          const retryAfter = errorMessage.split(":")[1] || "60";
+          return ApiResponseBuilder.error(
+            `Spotify API rate limit exceeded. Please try again in ${retryAfter} seconds.`,
+            429,
+            "RATE_LIMITED",
+            { retry_after: parseInt(retryAfter) }
+          );
+
+        case errorMessage === "SPOTIFY_SERVER_ERROR":
+          return ApiResponseBuilder.error(
+            "Spotify servers are currently experiencing issues. Please try again later.",
+            503,
+            "SPOTIFY_SERVER_ERROR"
+          );
+
+        case errorMessage.startsWith("SPOTIFY_API_ERROR_"):
+          const statusCode = errorMessage.split("_").pop();
+          return ApiResponseBuilder.spotifyError(
+            `Spotify API returned error ${statusCode}`,
+            { spotify_status: statusCode }
+          );
+
+        default:
+          return ApiResponseBuilder.error(
+            "An unexpected error occurred while fetching your current track."
+          );
+      }
+    }
+
+    return ApiResponseBuilder.error("Internal server error occurred");
   }
 }

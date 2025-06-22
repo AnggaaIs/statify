@@ -2,192 +2,191 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
-  MusicIcon,
-  MoonIcon,
-  SunIcon,
-  SettingsIcon,
-  LogOutIcon,
+  Grip,
+  MoonStar,
+  SunMoon,
+  MonitorCog,
+  LogOut,
+  User,
 } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useAuth } from "@/lib/auth/context";
-import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/hooks/use-auth";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useState } from "react";
 
-interface NavbarProps {
-  variant?: "landing" | "authenticated" | "default";
-}
-
-export function Navbar({ variant = "landing" }: NavbarProps) {
-  if (variant === "authenticated") {
-    return <AuthenticatedNavbar />;
-  }
-
-  return <LandingNavbar />;
-}
-
-function ThemeToggle() {
+export function Navbar() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { user, loading, signInWithSpotify, signOut } = useAuth();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-        <div className="h-4 w-4" />
-      </Button>
-    );
-  }
-
-  return (
-    <Button
-      variant="ghost"
-      size="sm"
-      className="h-9 w-9 p-0"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-    >
-      {theme === "dark" ? (
-        <SunIcon className="h-4 w-4 text-yellow-500" />
-      ) : (
-        <MoonIcon className="h-4 w-4 text-slate-700 dark:text-slate-200" />
-      )}
-      <span className="sr-only">Toggle theme</span>
-    </Button>
-  );
-}
-
-function UserMenu() {
-  const { user, signOut } = useAuth();
-  const router = useRouter();
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error("Error signing out:", error);
-      router.push("/auth/login?message=Sign out failed. Please try again.");
-    }
+  const getUserInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
-  if (!user) return null;
+  //good morning, good afternoon, good evening, good night
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
 
   return (
-    <div className="flex items-center gap-3">
-      {user?.user_metadata?.avatar_url && (
-        <div className="relative">
-          <Image
-            src={user.user_metadata.avatar_url}
-            alt="Profile"
-            width={32}
-            height={32}
-            className="rounded-full ring-2 ring-green-500/20"
-          />
-          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background animate-pulse" />
+    <header className="navbar sticky w-full flex top-0 backdrop-blur-sm z-[9999999]">
+      <div className="container mx-auto flex h-12 max-w-7xl items-center my-3 justify-between px-6">
+        <span className="text-xl flex items-center">Statify</span>
+        <div className="flex items-center gap-6">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline">
+                <Grip className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className="p-6 z-[999999999]">
+              <SheetHeader>
+                <SheetTitle className="text-xl">Control Center</SheetTitle>
+                <SheetDescription className="text-sm text-muted-foreground">
+                  {user
+                    ? `${getGreeting()}, ${
+                        user.user_metadata?.full_name || "Spotify User"
+                      }`
+                    : "Connect your Spotify to get started."}
+                </SheetDescription>
+              </SheetHeader>
+
+              <div className="grid gap-4">
+                {/* User Profile - only show when authenticated */}
+                {user && (
+                  <div className="flex items-center space-x-3 p-3 bg-muted rounded-lg">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage
+                        src={user.user_metadata?.avatar_url}
+                        alt={user.user_metadata?.full_name || "User"}
+                      />
+                      <AvatarFallback>
+                        {user.user_metadata?.full_name ? (
+                          getUserInitials(user.user_metadata.full_name)
+                        ) : (
+                          <User className="h-4 w-4" />
+                        )}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {user.user_metadata?.full_name || "Spotify User"}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {user.email}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Auth Button - only show Connect Spotify when not authenticated */}
+                {!user && (
+                  <Button
+                    variant="outline"
+                    className="flex items-center justify-center gap-2 w-full"
+                    onClick={signInWithSpotify}
+                    disabled={loading}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="20px"
+                      height="20px"
+                      fill="#1DB954"
+                    >
+                      <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.42 1.56-.299.421-1.02.599-1.559.3z" />
+                    </svg>
+                    Connect Spotify
+                  </Button>
+                )}
+
+                {/* Navigation - only show when authenticated */}
+                {user && (
+                  <>
+                    <div className="space-y-2">
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          //link to dashboard
+                          window.location.href = "/dashboard";
+                        }}
+                        className="w-full justify-start"
+                      >
+                        📊 Dashboard
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start">
+                        🎵 Top Tracks
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start">
+                        🎤 Top Artists
+                      </Button>
+                      <Button variant="ghost" className="w-full justify-start">
+                        📱 My Playlists
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <SheetFooter className="flex flex-col space-y-4">
+                {/* Theme Switcher */}
+                <div className="flex gap-2 justify-center w-full">
+                  <Button
+                    variant={theme === "light" ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => setTheme("light")}
+                  >
+                    <SunMoon className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    variant={theme === "dark" ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => setTheme("dark")}
+                  >
+                    <MoonStar className="h-5 w-5" />
+                  </Button>
+                  <Button
+                    variant={theme === "system" ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => setTheme("system")}
+                  >
+                    <MonitorCog className="h-5 w-5" />
+                  </Button>
+                </div>
+
+                {/* Sign Out Button - only show when authenticated */}
+                {user && (
+                  <Button
+                    variant="destructive"
+                    className="flex items-center justify-center gap-2 w-full"
+                    onClick={signOut}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </Button>
+                )}
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </div>
-      )}
-
-      <div className="hidden sm:block text-right">
-        <p className="text-sm font-medium text-foreground">
-          {user?.user_metadata?.full_name || "Spotify User"}
-        </p>
-        <p className="text-xs text-muted-foreground">{user?.email}</p>
       </div>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-9 w-9 p-0">
-            <SettingsIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleSignOut} variant="destructive">
-            <LogOutIcon className="h-4 w-4 mr-2" />
-            Sign out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-}
-
-function LandingNavbar() {
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
-
-  return (
-    <nav className="border-b border-border/50 bg-card/80 backdrop-blur-lg sticky top-0 z-50 pt-safe">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 py-10">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <MusicIcon className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Statify</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                Your Spotify Analytics
-              </p>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-2">
-            {/* Only show Features and Demo buttons on home page */}
-            {isHomePage && (
-              <>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="#features">Features</a>
-                </Button>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="#demo">Demo</a>
-                </Button>
-              </>
-            )}
-
-            <ThemeToggle />
-
-            <Button size="sm" asChild className="ml-2">
-              <Link href="/auth/login">Get Started</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
-    </nav>
-  );
-}
-
-function AuthenticatedNavbar() {
-  return (
-    <nav className="bg-card/80 backdrop-blur-lg border-b border-border/50 sticky top-0 z-50 pt-safe">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 py-10">
-          <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="p-2 bg-green-500/10 rounded-lg">
-              <MusicIcon className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Statify</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">
-                Your Spotify Analytics
-              </p>
-            </div>
-          </Link>
-
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <UserMenu />
-          </div>
-        </div>
-      </div>
-    </nav>
+    </header>
   );
 }

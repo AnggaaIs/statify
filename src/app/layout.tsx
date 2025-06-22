@@ -1,61 +1,40 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Lexend } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth/context";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
+import { ThemeProvider } from "@/components/providers/theme-provider";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { SonnerProvider } from "@/components/providers/sonner-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const lexend = Lexend({
+  variable: "--font-lexend",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
-  title: "Kadoku - Your Music Analytics Dashboard",
+  title: "Statify - Home",
   description:
-    "Beautiful Spotify analytics with real-time insights and personalized music statistics.",
-  keywords: ["spotify", "music", "analytics", "dashboard", "statistics"],
-  authors: [{ name: "Kadoku Team" }],
-  openGraph: {
-    title: "Kadoku - Your Music Analytics Dashboard",
-    description:
-      "Beautiful Spotify analytics with real-time insights and personalized music statistics.",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Kadoku - Your Music Analytics Dashboard",
-    description:
-      "Beautiful Spotify analytics with real-time insights and personalized music statistics.",
-  },
+    "Statify is a music statistics app that provides insights into your listening habits.",
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${lexend.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <AuthProvider>{children}</AuthProvider>
-          <Toaster
-            position="top-right"
-            richColors
-            closeButton
-            expand={true}
-            theme="system"
-            toastOptions={{
-              style: {
-                background: "hsl(var(--background))",
-                border: "1px solid hsl(var(--border))",
-                color: "hsl(var(--foreground))",
-              },
-            }}
-          />
+          <Navbar />
+          {children}
+          <Footer />
+          <SonnerProvider />
         </ThemeProvider>
       </body>
     </html>
