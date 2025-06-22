@@ -12,7 +12,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Full width cards */}
         <div className="w-full overflow-hidden">
           <NowPlayingCard />
         </div>
