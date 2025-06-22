@@ -20,9 +20,7 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Link from "next/link";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
@@ -48,7 +46,7 @@ export function Navbar() {
   return (
     <header className="navbar sticky w-full flex top-0 backdrop-blur-sm z-[9999999]">
       <div className="container mx-auto flex h-12 max-w-7xl items-center my-3 justify-between px-6">
-        <span className="text-xl flex items-center">Statify</span>
+        <span className="text-xl flex items-center font-bold">Statify</span>
         <div className="flex items-center gap-6">
           <Sheet>
             <SheetTrigger asChild>

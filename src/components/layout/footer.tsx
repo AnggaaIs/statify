@@ -74,6 +74,14 @@ export function Footer() {
                   Profile
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/developer"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Developer
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -81,14 +89,6 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm">
-              <li>
-                <Link
-                  href="/help"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Help Center
-                </Link>
-              </li>
               <li>
                 <Link
                   href="/privacy-policy"
@@ -103,14 +103,6 @@ export function Footer() {
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/contact"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  Contact Us
                 </Link>
               </li>
             </ul>
