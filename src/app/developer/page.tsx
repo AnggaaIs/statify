@@ -33,7 +33,7 @@ const developers = [
 
 export default function DeveloperPage() {
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8 md:px-6 md:py-12">
+    <div className="container mx-auto max-w-7xl px-6 py-8 md:px-8 md:py-12">
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -54,7 +54,7 @@ export default function DeveloperPage() {
                 key={index}
                 className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <CardHeader className="text-center pb-4">
+                <CardHeader className="text-center">
                   <div className="flex flex-col items-center space-y-4">
                     {/* Avatar */}
                     <Avatar className="w-24 h-24 ring-4 ring-muted group-hover:ring-primary/20 transition-all">
