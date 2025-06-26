@@ -2,8 +2,10 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner"; // Assuming you're using sonner for notifications
+import { toast } from "sonner";
 import { ApiResponse } from "../api";
+import { ClientAPI } from "../client-api";
+import { clearSessionAndRedirect } from "../utils";
 
 export function useSpotify() {
   const [loading, setLoading] = useState(false);
@@ -14,15 +16,20 @@ export function useSpotify() {
       setLoading(true);
 
       try {
-        const response = await fetch(endpoint);
-        const result: ApiResponse<T> = await response.json();
+        const result = await ClientAPI.get(endpoint);
 
-        if (!response.ok) {
-          await handleApiError(response.status, result);
+        // ClientAPI.get already handles errors and returns null on error
+        if (result === null) {
           return null;
         }
 
-        return result.data || null;
+        // If result has ApiResponse structure, extract data
+        if (result && typeof result === "object" && "data" in result) {
+          return (result as ApiResponse<T>).data || null;
+        }
+
+        // Otherwise return result directly
+        return result as T;
       } catch (error) {
         console.error("API call error:", error);
         toast.error("Something went wrong. Please try again.");
@@ -31,7 +38,7 @@ export function useSpotify() {
         setLoading(false);
       }
     },
-    [router]
+    []
   );
 
   const handleApiError = async (status: number, result: ApiResponse<any>) => {
@@ -76,6 +83,8 @@ export function useSpotify() {
     }
   };
 
+  // Note: handleApiError is kept for backward compatibility but ClientAPI now handles most errors
+
   const get_now_playing = useCallback(() => {
     return handleApiCall("/api/spotify/now-playing");
   }, [handleApiCall]);
@@ -109,6 +118,15 @@ export function useSpotify() {
     [handleApiCall]
   );
 
+  const get_user_playlists = useCallback(
+    (limit: number = 20, offset: number = 0) => {
+      return handleApiCall(
+        `/api/spotify/playlists?limit=${limit}&offset=${offset}`
+      );
+    },
+    [handleApiCall]
+  );
+
   return {
     loading,
     get_now_playing,
@@ -116,5 +134,6 @@ export function useSpotify() {
     get_top_artists,
     get_user_profile,
     get_recently_played,
+    get_user_playlists,
   };
 }

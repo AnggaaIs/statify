@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSpotify } from "@/lib/spotify/useSpotify";
+import { useApiError } from "@/hooks/use-api-error";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -46,6 +47,7 @@ interface NowPlayingData {
 
 export function NowPlayingCard() {
   const { get_now_playing } = useSpotify();
+  const { handleApiError } = useApiError();
   const [nowPlaying, setNowPlaying] = useState<NowPlayingData | null>(null);
   const [progress, setProgress] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -61,6 +63,7 @@ export function NowPlayingCard() {
       }
     } catch (error) {
       console.error("Error fetching now playing:", error);
+      handleApiError(error);
     } finally {
       if (isInitialLoading) {
         setIsInitialLoading(false);

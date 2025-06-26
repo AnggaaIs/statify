@@ -23,12 +23,12 @@ export async function GET(request: NextRequest) {
     }
 
     const spotify = new SpotifyAPI(true);
-    const topTracks = await spotify.getTopTracks(
+    const topArtists = await spotify.getTopArtists(
       timeRange as "short_term" | "medium_term" | "long_term",
       limit
     );
 
-    if (!topTracks) {
+    if (!topArtists) {
       return ApiResponseBuilder.success(
         {
           items: [],
@@ -38,21 +38,16 @@ export async function GET(request: NextRequest) {
           next: null,
           previous: null,
         },
-        "No top tracks found"
+        "No top artists found"
       );
     }
 
     return ApiResponseBuilder.success(
-      topTracks,
-      "Top tracks retrieved successfully"
+      topArtists,
+      "Top artists retrieved successfully"
     );
   } catch (error) {
-    console.error("Now playing error:", error);
-
-    if (error instanceof Error) {
-      return handleSpotifyError(error);
-    }
-
-    return ApiResponseBuilder.error("Internal server error occurred");
+    console.error("Top artists error:", error);
+    return handleSpotifyError(error as Error);
   }
 }

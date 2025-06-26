@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { SonnerProvider } from "@/components/providers/sonner-provider";
+import { SessionMonitor } from "@/components/session-monitor";
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -31,6 +32,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SessionMonitor />
           <Navbar />
           {children}
           <Footer />

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { clearSessionAndRedirect } from "@/lib/utils";
 
 export class SpotifyAPI {
   private baseURL = "https://api.spotify.com/v1";
@@ -19,7 +20,9 @@ export class SpotifyAPI {
       if (this.isApiRoute) {
         throw new Error("NO_ACCESS_TOKEN");
       } else {
-        redirect("/?error=not_authenticated");
+        // Clear session and redirect to home
+        await this.handleTokenExpired();
+        return;
       }
     }
 
@@ -61,6 +64,16 @@ export class SpotifyAPI {
 
       return jsonResponse;
     } catch (error) {
+      // Handle redirect errors (jika bukan API route)
+      if (
+        error instanceof Error &&
+        this.shouldRedirectError(error.message) &&
+        !this.isApiRoute
+      ) {
+        this.handleErrorRedirect(error.message);
+        return;
+      }
+
       // Re-throw known errors
       if (error instanceof Error && this.isKnownError(error.message)) {
         throw error;
@@ -93,34 +106,95 @@ export class SpotifyAPI {
           }
         } else {
           // Other auth issues (invalid token format, etc.)
-          throw new Error("INVALID_TOKEN");
+          if (this.isApiRoute) {
+            throw new Error("INVALID_TOKEN");
+          } else {
+            redirect("/?error=invalid_token");
+          }
         }
 
       case 403:
         // Check specific permission issues
         if (this.isInsufficientScopeError(errorResponse)) {
-          throw new Error("INSUFFICIENT_SCOPE");
+          if (this.isApiRoute) {
+            throw new Error("INSUFFICIENT_SCOPE");
+          } else {
+            redirect("/?error=insufficient_scope");
+          }
         } else if (this.isPremiumRequiredError(errorResponse)) {
-          throw new Error("PREMIUM_REQUIRED");
+          if (this.isApiRoute) {
+            throw new Error("PREMIUM_REQUIRED");
+          } else {
+            redirect("/?error=premium_required");
+          }
         } else {
-          throw new Error("FORBIDDEN");
+          if (this.isApiRoute) {
+            throw new Error("FORBIDDEN");
+          } else {
+            redirect("/?error=forbidden");
+          }
         }
 
       case 404:
-        throw new Error("RESOURCE_NOT_FOUND");
+        if (this.isApiRoute) {
+          throw new Error("RESOURCE_NOT_FOUND");
+        } else {
+          redirect("/?error=resource_not_found");
+        }
 
       case 429:
         // Rate limiting with retry-after header
         const retryAfter = errorResponse?.retry_after || 1;
-        throw new Error(`RATE_LIMITED:${retryAfter}`);
+        if (this.isApiRoute) {
+          throw new Error(`RATE_LIMITED:${retryAfter}`);
+        } else {
+          redirect(`/?error=rate_limited&retry_after=${retryAfter}`);
+        }
 
       case 500:
       case 502:
       case 503:
-        throw new Error("SPOTIFY_SERVER_ERROR");
+        if (this.isApiRoute) {
+          throw new Error("SPOTIFY_SERVER_ERROR");
+        } else {
+          redirect("/?error=server_error");
+        }
 
       default:
-        throw new Error(`SPOTIFY_API_ERROR_${status}`);
+        if (this.isApiRoute) {
+          throw new Error(`SPOTIFY_API_ERROR_${status}`);
+        } else {
+          redirect(`/?error=api_error&status=${status}`);
+        }
+    }
+  }
+
+  private shouldRedirectError(errorMessage: string): boolean {
+    const redirectErrors = [
+      "NO_ACCESS_TOKEN",
+      "TOKEN_EXPIRED",
+      "INVALID_TOKEN",
+      "INSUFFICIENT_SCOPE",
+      "PREMIUM_REQUIRED",
+      "FORBIDDEN",
+    ];
+
+    return redirectErrors.some((error) => errorMessage.includes(error));
+  }
+
+  private handleErrorRedirect(errorMessage: string) {
+    if (errorMessage.includes("NO_ACCESS_TOKEN")) {
+      redirect("/?error=no_access_token");
+    } else if (errorMessage.includes("TOKEN_EXPIRED")) {
+      redirect("/?error=token_expired");
+    } else if (errorMessage.includes("INVALID_TOKEN")) {
+      redirect("/?error=invalid_token");
+    } else if (errorMessage.includes("INSUFFICIENT_SCOPE")) {
+      redirect("/?error=insufficient_scope");
+    } else if (errorMessage.includes("PREMIUM_REQUIRED")) {
+      redirect("/?error=premium_required");
+    } else if (errorMessage.includes("FORBIDDEN")) {
+      redirect("/?error=forbidden");
     }
   }
 
@@ -180,10 +254,10 @@ export class SpotifyAPI {
   }
 
   private async handleTokenExpired() {
-    console.log("Token expired, signing out user");
+    console.log("Token expired, signing out user and clearing session");
     const supabase = await createClient();
     await supabase.auth.signOut();
-    redirect("/?error=token_expired");
+    redirect("/?error=token_expired&ts=" + Date.now());
   }
 
   // Utility method to check if user has required scopes
@@ -268,9 +342,11 @@ export class SpotifyAPI {
     }
   }
 
-  async getUserPlaylists(limit = 20) {
+  async getUserPlaylists(limit = 20, offset = 0) {
     try {
-      return await this.makeRequest(`/me/playlists?limit=${limit}`);
+      return await this.makeRequest(
+        `/me/playlists?limit=${limit}&offset=${offset}`
+      );
     } catch (error) {
       if (error instanceof Error && error.message === "INSUFFICIENT_SCOPE") {
         throw new Error("INSUFFICIENT_SCOPE:playlist-read-private");

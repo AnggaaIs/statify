@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
+import { clearSessionAndRedirect } from "@/lib/utils";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -93,16 +94,25 @@ export function useAuth() {
           id: "sign-out",
         });
 
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 1000);
+        // Use the utility function to clear session and redirect
+        clearSessionAndRedirect();
       }
     } catch (error) {
       toast("Something went wrong", {
         id: "sign-out",
       });
+      // Even if signOut fails, clear local session
+      clearSessionAndRedirect();
     }
   };
 
-  return { user, loading, signInWithSpotify, signOut };
+  // Function to handle session expiration
+  const handleSessionExpired = () => {
+    toast("Session expired", {
+      description: "Your session has expired. Please login again.",
+    });
+    clearSessionAndRedirect();
+  };
+
+  return { user, loading, signInWithSpotify, signOut, handleSessionExpired };
 }
