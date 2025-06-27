@@ -50,7 +50,7 @@ export default function AccessDeniedPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-gray-50 dark:from-slate-950/20 dark:via-background dark:to-gray-950/20 p-4">
-      <Card className="w-full max-w-md border-red-100 dark:border-red-900/30 shadow-xl">
+      <Card className="w-full max-w-md border-red-100 dark:border-red-900/30 shadow-xl bg-gradient-to-br from-red-50/20 via-background to-red-50/10 dark:from-red-950/20 dark:via-background dark:to-red-900/10">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto w-16 h-16 bg-red-50 dark:bg-red-950/20 rounded-full flex items-center justify-center">
             <ShieldX className="w-8 h-8 text-red-500 dark:text-red-400" />

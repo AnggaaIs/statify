@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
         </div>
 
         {/* Introduction */}
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50/20 via-background to-blue-50/10 dark:from-blue-950/20 dark:via-background dark:to-blue-900/10 border-blue-200/30 dark:border-blue-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Introduction</CardTitle>
           </CardHeader>
@@ -35,7 +35,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Information We Collect */}
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50/20 via-background to-green-50/10 dark:from-green-950/20 dark:via-background dark:to-green-900/10 border-green-200/30 dark:border-green-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Information We Collect</CardTitle>
           </CardHeader>
@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* How We Use Your Information */}
-        <Card>
+        <Card className="bg-gradient-to-br from-purple-50/20 via-background to-purple-50/10 dark:from-purple-950/20 dark:via-background dark:to-purple-900/10 border-purple-200/30 dark:border-purple-800/30">
           <CardHeader>
             <CardTitle className="text-xl">
               How We Use Your Information
@@ -116,7 +116,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Data Sharing and Disclosure */}
-        <Card>
+        <Card className="bg-gradient-to-br from-orange-50/20 via-background to-orange-50/10 dark:from-orange-950/20 dark:via-background dark:to-orange-900/10 border-orange-200/30 dark:border-orange-800/30">
           <CardHeader>
             <CardTitle className="text-xl">
               Data Sharing and Disclosure
@@ -150,7 +150,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Data Security */}
-        <Card>
+        <Card className="bg-gradient-to-br from-red-50/20 via-background to-red-50/10 dark:from-red-950/20 dark:via-background dark:to-red-900/10 border-red-200/30 dark:border-red-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Data Security</CardTitle>
           </CardHeader>
@@ -172,7 +172,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Data Retention */}
-        <Card>
+        <Card className="bg-gradient-to-br from-indigo-50/20 via-background to-indigo-50/10 dark:from-indigo-950/20 dark:via-background dark:to-indigo-900/10 border-indigo-200/30 dark:border-indigo-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Data Retention</CardTitle>
           </CardHeader>
@@ -188,7 +188,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Your Rights and Choices */}
-        <Card>
+        <Card className="bg-gradient-to-br from-teal-50/20 via-background to-teal-50/10 dark:from-teal-950/20 dark:via-background dark:to-teal-900/10 border-teal-200/30 dark:border-teal-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Your Rights and Choices</CardTitle>
           </CardHeader>
@@ -235,7 +235,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Third-Party Services */}
-        <Card>
+        <Card className="bg-gradient-to-br from-yellow-50/20 via-background to-yellow-50/10 dark:from-yellow-950/20 dark:via-background dark:to-yellow-900/10 border-yellow-200/30 dark:border-yellow-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Third-Party Services</CardTitle>
           </CardHeader>
@@ -268,7 +268,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Cookies and Tracking */}
-        <Card>
+        <Card className="bg-gradient-to-br from-pink-50/20 via-background to-pink-50/10 dark:from-pink-950/20 dark:via-background dark:to-pink-900/10 border-pink-200/30 dark:border-pink-800/30">
           <CardHeader>
             <CardTitle className="text-xl">
               Cookies and Tracking Technologies
@@ -292,7 +292,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Children's Privacy */}
-        <Card>
+        <Card className="bg-gradient-to-br from-cyan-50/20 via-background to-cyan-50/10 dark:from-cyan-950/20 dark:via-background dark:to-cyan-900/10 border-cyan-200/30 dark:border-cyan-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Children's Privacy</CardTitle>
           </CardHeader>
@@ -308,7 +308,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* International Data Transfers */}
-        <Card>
+        <Card className="bg-gradient-to-br from-violet-50/20 via-background to-violet-50/10 dark:from-violet-950/20 dark:via-background dark:to-violet-900/10 border-violet-200/30 dark:border-violet-800/30">
           <CardHeader>
             <CardTitle className="text-xl">
               International Data Transfers
@@ -325,7 +325,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Changes to This Privacy Policy */}
-        <Card>
+        <Card className="bg-gradient-to-br from-emerald-50/20 via-background to-emerald-50/10 dark:from-emerald-950/20 dark:via-background dark:to-emerald-900/10 border-emerald-200/30 dark:border-emerald-800/30">
           <CardHeader>
             <CardTitle className="text-xl">
               Changes to This Privacy Policy
@@ -343,7 +343,7 @@ export default function PrivacyPolicyPage() {
         </Card>
 
         {/* Contact Information */}
-        <Card>
+        <Card className="bg-gradient-to-br from-rose-50/20 via-background to-rose-50/10 dark:from-rose-950/20 dark:via-background dark:to-rose-900/10 border-rose-200/30 dark:border-rose-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Contact Us</CardTitle>
           </CardHeader>

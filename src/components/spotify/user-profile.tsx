@@ -258,7 +258,7 @@ export function UserProfileCard() {
 
   if (isLoadingProfile) {
     return (
-      <Card>
+      <Card className="bg-gradient-to-br from-indigo-50/20 via-background to-indigo-50/10 dark:from-indigo-950/20 dark:via-background dark:to-indigo-900/10 border-indigo-200/30 dark:border-indigo-800/30">
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -303,7 +303,7 @@ export function UserProfileCard() {
 
   if (!profile) {
     return (
-      <Card>
+      <Card className="bg-gradient-to-br from-indigo-50/20 via-background to-indigo-50/10 dark:from-indigo-950/20 dark:via-background dark:to-indigo-900/10 border-indigo-200/30 dark:border-indigo-800/30">
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
             <User className="h-5 w-5" />
@@ -329,7 +329,7 @@ export function UserProfileCard() {
   return (
     <div className="space-y-6">
       {/* Main Profile Card */}
-      <Card>
+      <Card className="bg-gradient-to-br from-indigo-50/20 via-background to-indigo-50/10 dark:from-indigo-950/20 dark:via-background dark:to-indigo-900/10 border-indigo-200/30 dark:border-indigo-800/30">
         <CardHeader className="border-b">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -448,7 +448,7 @@ export function UserProfileCard() {
       </Card>
 
       {/* Listening Statistics Card */}
-      <Card>
+      <Card className="bg-gradient-to-br from-indigo-50/20 via-background to-indigo-50/10 dark:from-indigo-950/20 dark:via-background dark:to-indigo-900/10 border-indigo-200/30 dark:border-indigo-800/30">
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />

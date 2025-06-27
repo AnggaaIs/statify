@@ -136,7 +136,7 @@ export function EmbedGenerator() {
 
   if (!user) {
     return (
-      <Card>
+      <Card className="bg-gradient-to-br from-emerald-50/20 via-background to-emerald-50/10 dark:from-emerald-950/20 dark:via-background dark:to-emerald-900/10 border-emerald-200/30 dark:border-emerald-800/30">
         <CardContent className="py-12">
           <div className="text-center">
             <Code className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
@@ -155,7 +155,7 @@ export function EmbedGenerator() {
   return (
     <div className="space-y-6">
       {/* Configuration Card */}
-      <Card>
+      <Card className="bg-gradient-to-br from-emerald-50/20 via-background to-emerald-50/10 dark:from-emerald-950/20 dark:via-background dark:to-emerald-900/10 border-emerald-200/30 dark:border-emerald-800/30">
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
@@ -362,7 +362,7 @@ export function EmbedGenerator() {
       </Card>
 
       {/* Preview Card */}
-      <Card>
+      <Card className="bg-gradient-to-br from-emerald-50/20 via-background to-emerald-50/10 dark:from-emerald-950/20 dark:via-background dark:to-emerald-900/10 border-emerald-200/30 dark:border-emerald-800/30">
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
             <Eye className="h-5 w-5" />
@@ -411,7 +411,7 @@ export function EmbedGenerator() {
       </Card>
 
       {/* Embed Code Card */}
-      <Card>
+      <Card className="bg-gradient-to-br from-emerald-50/20 via-background to-emerald-50/10 dark:from-emerald-950/20 dark:via-background dark:to-emerald-900/10 border-emerald-200/30 dark:border-emerald-800/30">
         <CardHeader className="border-b">
           <CardTitle className="flex items-center gap-2">
             <Code className="h-5 w-5" />

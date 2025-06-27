@@ -19,7 +19,7 @@ export default function TermsOfServicePage() {
         </div>
 
         {/* Introduction */}
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-50/20 via-background to-blue-50/10 dark:from-blue-950/20 dark:via-background dark:to-blue-900/10 border-blue-200/30 dark:border-blue-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Agreement to Terms</CardTitle>
           </CardHeader>
@@ -35,7 +35,7 @@ export default function TermsOfServicePage() {
         </Card>
 
         {/* Description of Service */}
-        <Card>
+        <Card className="bg-gradient-to-br from-green-50/20 via-background to-green-50/10 dark:from-green-950/20 dark:via-background dark:to-green-900/10 border-green-200/30 dark:border-green-800/30">
           <CardHeader>
             <CardTitle className="text-xl">Description of Service</CardTitle>
           </CardHeader>
@@ -55,7 +55,7 @@ export default function TermsOfServicePage() {
         </Card>
 
         {/* User Accounts */}
-        <Card>
+        <Card className="bg-gradient-to-br from-orange-50/20 via-background to-orange-50/10 dark:from-orange-950/20 dark:via-background dark:to-orange-900/10 border-orange-200/30 dark:border-orange-800/30">
           <CardHeader>
             <CardTitle className="text-xl">User Accounts</CardTitle>
           </CardHeader>

@@ -52,7 +52,7 @@ export default function DeveloperPage() {
             return (
               <Card
                 key={index}
-                className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                className="group hover:shadow-lg transition-all duration-300 hover:-translate-y-1 bg-gradient-to-br from-slate-50/20 via-background to-slate-50/10 dark:from-slate-950/20 dark:via-background dark:to-slate-900/10 border-slate-200/30 dark:border-slate-800/30"
               >
                 <CardHeader className="text-center">
                   <div className="flex flex-col items-center space-y-4">
@@ -117,21 +117,21 @@ export default function DeveloperPage() {
 
         {/* Team Stats */}
         <div className="grid gap-4 md:grid-cols-3 mt-12">
-          <Card className="text-center">
+          <Card className="text-center bg-gradient-to-br from-blue-50/20 via-background to-blue-50/10 dark:from-blue-950/20 dark:via-background dark:to-blue-900/10 border-blue-200/30 dark:border-blue-800/30">
             <CardContent className="pt-6">
               <div className="text-3xl font-bold text-primary mb-2">3</div>
               <p className="text-sm text-muted-foreground">Team Members</p>
             </CardContent>
           </Card>
 
-          <Card className="text-center">
+          <Card className="text-center bg-gradient-to-br from-green-50/20 via-background to-green-50/10 dark:from-green-950/20 dark:via-background dark:to-green-900/10 border-green-200/30 dark:border-green-800/30">
             <CardContent className="pt-6">
               <div className="text-3xl font-bold text-primary mb-2">100+</div>
               <p className="text-sm text-muted-foreground">Commits</p>
             </CardContent>
           </Card>
 
-          <Card className="text-center">
+          <Card className="text-center bg-gradient-to-br from-purple-50/20 via-background to-purple-50/10 dark:from-purple-950/20 dark:via-background dark:to-purple-900/10 border-purple-200/30 dark:border-purple-800/30">
             <CardContent className="pt-6">
               <div className="text-3xl font-bold text-primary mb-2">24/7</div>
               <p className="text-sm text-muted-foreground">Dedication</p>
