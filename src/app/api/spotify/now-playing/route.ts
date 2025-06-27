@@ -7,11 +7,17 @@ export async function GET() {
     const spotify = new SpotifyAPI(true);
     const current_track = await spotify.getCurrentlyPlaying();
 
+    console.log(
+      "Raw Spotify API response:",
+      JSON.stringify(current_track, null, 2)
+    );
+
     if (!current_track) {
       return ApiResponseBuilder.success(
         {
           is_playing: false,
           current_track: null,
+          device: null,
         },
         "No track currently playing"
       );
@@ -33,13 +39,18 @@ export async function GET() {
         track_id: current_track.item?.id,
         uri: current_track.item?.uri,
       },
-      device: {
-        name: current_track.device?.name,
-        type: current_track.device?.type,
-        volume_percent: current_track.device?.volume_percent,
-      },
+      device: current_track.device
+        ? {
+            name: current_track.device.name,
+            type: current_track.device.type,
+            volume_percent: current_track.device.volume_percent,
+          }
+        : null,
       context: current_track.context,
     };
+
+    console.log("Device info from Spotify:", current_track.device);
+    console.log("Processed response:", response_data);
 
     return ApiResponseBuilder.success(
       response_data,

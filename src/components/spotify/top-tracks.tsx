@@ -16,40 +16,7 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-
-interface Track {
-  id: string;
-  name: string;
-  artists: Array<{
-    name: string;
-    external_urls: {
-      spotify: string;
-    };
-  }>;
-  album: {
-    name: string;
-    images: Array<{
-      url: string;
-      height: number;
-      width: number;
-    }>;
-  };
-  duration_ms: number;
-  popularity: number;
-  external_urls: {
-    spotify: string;
-  };
-  preview_url: string | null;
-}
-
-interface TopTracksData {
-  items: Track[];
-  total: number;
-  limit: number;
-  offset: number;
-  next: string | null;
-  previous: string | null;
-}
+import { Track, TopTracksData, TimeRange } from "@/types";
 
 export function TopTracksCard() {
   const { get_top_tracks, loading } = useSpotify();

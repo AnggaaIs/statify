@@ -3,7 +3,6 @@
 import { clearSessionAndRedirect } from "@/lib/utils";
 import { toast } from "sonner";
 
-// Client-side API utility with automatic error handling
 export class ClientAPI {
   static async fetch(url: string, options: RequestInit = {}) {
     try {
@@ -15,15 +14,11 @@ export class ClientAPI {
         },
       });
 
-      // Handle different response statuses
       if (response.status === 401) {
-        // Check response body for more specific error
         let errorData;
         try {
           errorData = await response.json();
-        } catch (e) {
-          // If can't parse JSON, treat as generic auth error
-        }
+        } catch (e) {}
 
         if (
           errorData?.error?.code === "TOKEN_EXPIRED" ||
@@ -51,20 +46,17 @@ export class ClientAPI {
       }
 
       if (!response.ok) {
-        // Try to get error message from response
         let errorMessage = "Something went wrong";
         try {
           const errorData = await response.json();
           errorMessage = errorData.message || errorData.error || errorMessage;
         } catch (e) {
-          // If can't parse JSON, use status text
           errorMessage = response.statusText || errorMessage;
         }
 
         throw new Error(`HTTP ${response.status}: ${errorMessage}`);
       }
 
-      // Handle 204 No Content
       if (response.status === 204) {
         return null;
       }
@@ -73,7 +65,6 @@ export class ClientAPI {
     } catch (error) {
       console.error("API Error:", error);
 
-      // Handle specific error messages
       if (error instanceof Error) {
         const message = error.message.toLowerCase();
 
@@ -86,7 +77,6 @@ export class ClientAPI {
           return null;
         }
 
-        // Handle network errors
         if (message.includes("fetch")) {
           toast.error("Network error", {
             description: "Please check your internet connection and try again.",
@@ -99,7 +89,6 @@ export class ClientAPI {
     }
   }
 
-  // Convenience methods for common HTTP methods
   static async get(url: string, options: RequestInit = {}) {
     return this.fetch(url, { ...options, method: "GET" });
   }

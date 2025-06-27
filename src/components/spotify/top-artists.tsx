@@ -20,33 +20,7 @@ import {
   Headphones,
 } from "lucide-react";
 import Link from "next/link";
-
-interface Artist {
-  id: string;
-  name: string;
-  genres: string[];
-  popularity: number;
-  followers: {
-    total: number;
-  };
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
-  external_urls: {
-    spotify: string;
-  };
-}
-
-interface TopArtistsData {
-  items: Artist[];
-  total: number;
-  limit: number;
-  offset: number;
-  next: string | null;
-  previous: string | null;
-}
+import { Artist, TopArtistsData } from "@/types";
 
 export function TopArtistsCard() {
   const { get_top_artists, loading } = useSpotify();
@@ -292,7 +266,7 @@ export function TopArtistsCard() {
                 </p>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span>
-                    {formatFollowers(artist.followers.total)} followers
+                    {formatFollowers(artist.followers!.total)} followers
                   </span>
                   <span>•</span>
                   <span>{artist.popularity}% popularity</span>
@@ -449,7 +423,7 @@ export function TopArtistsDetails() {
       case "popularity":
         return filtered.sort((a, b) => b.popularity - a.popularity);
       case "followers":
-        return filtered.sort((a, b) => b.followers.total - a.followers.total);
+        return filtered.sort((a, b) => b.followers!.total - a.followers!.total);
       case "rank":
       default:
         return filtered; // Keep original order (rank)
@@ -611,7 +585,7 @@ export function TopArtistsDetails() {
             <div className="text-2xl font-bold text-orange-500">
               {formatFollowers(
                 processedArtists.reduce(
-                  (sum, artist) => sum + artist.followers.total,
+                  (sum, artist) => sum + artist.followers!.total,
                   0
                 )
               )}
@@ -687,7 +661,7 @@ export function TopArtistsDetails() {
                     <span>Followers</span>
                   </div>
                   <span className="font-medium">
-                    {formatFollowers(artist.followers.total)}
+                    {formatFollowers(artist.followers!.total)}
                   </span>
                 </div>
               </div>
@@ -745,7 +719,7 @@ export function TopArtistsDetails() {
                 <div>
                   <h2 className="text-2xl font-bold">{selectedArtist.name}</h2>
                   <p className="text-muted-foreground">
-                    {formatFollowers(selectedArtist.followers.total)} followers
+                    {formatFollowers(selectedArtist.followers!.total)} followers
                   </p>
                 </div>
               </div>

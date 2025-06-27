@@ -355,6 +355,18 @@ export class SpotifyAPI {
     }
   }
 
+  // Get available devices
+  async getAvailableDevices() {
+    try {
+      return await this.makeRequest("/me/player/devices");
+    } catch (error) {
+      if (error instanceof Error && error.message === "INSUFFICIENT_SCOPE") {
+        throw new Error("INSUFFICIENT_SCOPE:user-read-playback-state");
+      }
+      throw error;
+    }
+  }
+
   // Playback control methods (require premium)
   async pausePlayback() {
     return await this.makeRequest("/me/player/pause", { method: "PUT" });
@@ -370,5 +382,16 @@ export class SpotifyAPI {
 
   async skipToPrevious() {
     return await this.makeRequest("/me/player/previous", { method: "POST" });
+  }
+
+  async getCurrentPlayback() {
+    try {
+      return await this.makeRequest("/me/player");
+    } catch (error) {
+      if (error instanceof Error && error.message === "INSUFFICIENT_SCOPE") {
+        throw new Error("INSUFFICIENT_SCOPE:user-read-playback-state");
+      }
+      throw error;
+    }
   }
 }

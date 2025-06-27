@@ -23,6 +23,8 @@ import {
   List,
   Settings,
   Home,
+  Code,
+  Activity,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
@@ -61,9 +63,12 @@ export function Navbar() {
   const navigationItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
+    { href: "/statistics", label: "Statistics", icon: Activity },
     { href: "/top-tracks", label: "Top Tracks", icon: Music },
     { href: "/top-artists", label: "Top Artists", icon: Mic },
     { href: "/playlists", label: "My Playlists", icon: List },
+    { href: "/profile", label: "Profile", icon: User },
+    { href: "/embed", label: "Embed Generator", icon: Code },
   ];
 
   return (

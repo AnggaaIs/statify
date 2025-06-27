@@ -20,41 +20,7 @@ import {
   ListMusic,
 } from "lucide-react";
 import Link from "next/link";
-
-interface Playlist {
-  id: string;
-  name: string;
-  description: string;
-  public: boolean;
-  collaborative: boolean;
-  owner: {
-    id: string;
-    display_name: string;
-  };
-  tracks: {
-    total: number;
-  };
-  images: Array<{
-    url: string;
-    height: number;
-    width: number;
-  }>;
-  external_urls: {
-    spotify: string;
-  };
-  followers?: {
-    total: number;
-  };
-}
-
-interface PlaylistsData {
-  items: Playlist[];
-  total: number;
-  limit: number;
-  offset: number;
-  next: string | null;
-  previous: string | null;
-}
+import { Playlist, PlaylistsData } from "@/types";
 
 export function MyPlaylistsCard() {
   const { get_user_playlists, loading } = useSpotify();

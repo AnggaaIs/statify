@@ -6,20 +6,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Utility function to clear session and redirect to home
 export function clearSessionAndRedirect() {
   if (typeof window !== "undefined") {
-    // Clear localStorage
     localStorage.clear();
-
-    // Clear sessionStorage
     sessionStorage.clear();
 
-    // Clear all cookies related to auth
     document.cookie.split(";").forEach((cookie) => {
       const eqPos = cookie.indexOf("=");
       const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
-      // Clear supabase related cookies
       if (
         name.includes("supabase") ||
         name.includes("auth") ||
@@ -30,12 +24,10 @@ export function clearSessionAndRedirect() {
       }
     });
 
-    // Redirect to home with error parameter
     window.location.href = "/?error=session_expired&ts=" + Date.now();
   }
 }
 
-// Client-side function to handle token expiration
 export function handleTokenExpiration() {
   if (typeof window !== "undefined") {
     clearSessionAndRedirect();
@@ -47,7 +39,6 @@ export function handleSpotifyError(error: Error) {
 
   switch (errorMessage) {
     case "NO_ACCESS_TOKEN":
-      // Handle client-side redirect if needed
       if (typeof window !== "undefined") {
         clearSessionAndRedirect();
       }
@@ -55,7 +46,6 @@ export function handleSpotifyError(error: Error) {
         "Spotify access token not found. Please login again."
       );
     case "TOKEN_EXPIRED":
-      // Handle client-side redirect if needed
       if (typeof window !== "undefined") {
         clearSessionAndRedirect();
       }
@@ -63,7 +53,6 @@ export function handleSpotifyError(error: Error) {
         "Your Spotify session has expired. Please login again to continue."
       );
     case "INVALID_TOKEN":
-      // Handle client-side redirect if needed
       if (typeof window !== "undefined") {
         clearSessionAndRedirect();
       }

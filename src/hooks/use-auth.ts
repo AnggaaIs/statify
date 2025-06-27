@@ -54,6 +54,7 @@ export function useAuth() {
             "user-read-playback-state",
             "user-modify-playback-state",
             "user-read-currently-playing",
+            "user-read-recently-played",
             "app-remote-control",
             "user-top-read",
             "user-follow-read",
@@ -94,19 +95,16 @@ export function useAuth() {
           id: "sign-out",
         });
 
-        // Use the utility function to clear session and redirect
         clearSessionAndRedirect();
       }
     } catch (error) {
       toast("Something went wrong", {
         id: "sign-out",
       });
-      // Even if signOut fails, clear local session
       clearSessionAndRedirect();
     }
   };
 
-  // Function to handle session expiration
   const handleSessionExpired = () => {
     toast("Session expired", {
       description: "Your session has expired. Please login again.",

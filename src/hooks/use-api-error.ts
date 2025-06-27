@@ -7,7 +7,6 @@ import { clearSessionAndRedirect } from "@/lib/utils";
 export function useApiError() {
   const handleApiError = useCallback((error: any) => {
     if (typeof error === "string") {
-      // Handle error messages from API responses
       if (error.includes("TOKEN_EXPIRED") || error.includes("token_expired")) {
         toast.error("Session expired", {
           description: "Your session has expired. Please login again.",
@@ -36,7 +35,6 @@ export function useApiError() {
       }
     }
 
-    // Handle error objects
     if (error?.message) {
       if (
         error.message === "TOKEN_EXPIRED" ||
@@ -48,7 +46,6 @@ export function useApiError() {
       }
     }
 
-    // Handle HTTP responses
     if (error?.status === 401) {
       toast.error("Authentication required", {
         description: "Please login to continue.",
@@ -57,7 +54,6 @@ export function useApiError() {
       return;
     }
 
-    // Default error handling
     console.error("API Error:", error);
     toast.error("Something went wrong", {
       description: "Please try again later.",

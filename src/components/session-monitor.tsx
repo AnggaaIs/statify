@@ -26,7 +26,7 @@ export function SessionMonitor() {
     const sessionCheckInterval = setInterval(async () => {
       try {
         const response = await fetch("/api/spotify/profile", {
-          method: "HEAD", // Use HEAD to avoid fetching data
+          method: "HEAD",
         });
 
         if (response.status === 401) {
@@ -36,7 +36,7 @@ export function SessionMonitor() {
       } catch (error) {
         console.error("Session check error:", error);
       }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 5 * 60 * 1000);
 
     return () => {
       window.removeEventListener("session-expired", handleSessionExpired);

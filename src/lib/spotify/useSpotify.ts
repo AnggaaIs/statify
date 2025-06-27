@@ -127,6 +127,10 @@ export function useSpotify() {
     [handleApiCall]
   );
 
+  const get_available_devices = useCallback(() => {
+    return handleApiCall("/api/spotify/devices");
+  }, [handleApiCall]);
+
   return {
     loading,
     get_now_playing,
@@ -135,5 +139,6 @@ export function useSpotify() {
     get_user_profile,
     get_recently_played,
     get_user_playlists,
+    get_available_devices,
   };
 }
