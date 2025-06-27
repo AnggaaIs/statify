@@ -49,6 +49,7 @@ export async function middleware(request: NextRequest) {
   ) {
     const redirectUrl = new URL("/access-denied", request.url);
     redirectUrl.searchParams.set("reason", "no_auth");
+    redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
     redirectUrl.searchParams.set("ts", Date.now().toString());
     return NextResponse.redirect(redirectUrl);
   }

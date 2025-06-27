@@ -38,8 +38,21 @@ export function useAuth() {
     return () => subscription?.unsubscribe();
   }, [supabase]);
 
-  const signInWithSpotify = async () => {
+  const signInWithSpotify = async (redirectTo?: string) => {
     try {
+      // Store redirect URL in localStorage if provided
+      if (redirectTo) {
+        localStorage.setItem("auth_redirect", redirectTo);
+      }
+
+      // Create redirect URL with next parameter
+      const callbackUrl = new URL(
+        `${window.location.origin}/api/auth/callback`
+      );
+      if (redirectTo) {
+        callbackUrl.searchParams.set("next", redirectTo);
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "spotify",
         options: {
@@ -60,7 +73,7 @@ export function useAuth() {
             "user-follow-read",
             "streaming",
           ].join(" "),
-          redirectTo: `${window.location.origin}/api/auth/callback`,
+          redirectTo: callbackUrl.toString(),
 
           queryParams: {
             show_dialog: "true",

@@ -105,7 +105,7 @@ export function Navbar() {
                 </SheetHeader>
               </div>
 
-              <div className="flex-1 px-8 py-6 space-y-8">
+              <div className="flex-1 px-8 py-4 space-y-6">
                 {/* User Profile Section */}
                 {user && (
                   <div className="flex items-center space-x-4 p-4 bg-muted/50 rounded-lg">
@@ -160,7 +160,25 @@ export function Navbar() {
                     </div>
                     <Button
                       className="w-full bg-[#1DB954] hover:bg-[#1ed760] text-white"
-                      onClick={signInWithSpotify}
+                      onClick={() => {
+                        // Pass current path if it's a protected route
+                        const protectedRoutes = [
+                          "/dashboard",
+                          "/top-tracks",
+                          "/top-artists",
+                          "/playlists",
+                          "/profile",
+                          "/embed",
+                          "/statistics",
+                        ];
+                        const currentPath = pathname;
+                        const redirectPath = protectedRoutes.includes(
+                          currentPath
+                        )
+                          ? currentPath
+                          : undefined;
+                        signInWithSpotify(redirectPath);
+                      }}
                       disabled={loading}
                     >
                       <svg
@@ -215,7 +233,7 @@ export function Navbar() {
                 )}
               </div>
 
-              <SheetFooter className="px-8 py-6 border-t">
+              <SheetFooter className="px-8 pt-8 pb-20 border-t">
                 {/* Theme Switcher */}
                 <div className="w-full space-y-6">
                   <div className="space-y-3">

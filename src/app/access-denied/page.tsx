@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
@@ -10,8 +10,11 @@ import { ShieldX, Timer, LogIn } from "lucide-react";
 export default function AccessDeniedPage() {
   const [countdown, setCountdown] = useState(30);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { signInWithSpotify, loading } = useAuth();
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const redirectPath = searchParams.get("redirect") || "/dashboard";
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
@@ -45,7 +48,7 @@ export default function AccessDeniedPage() {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
-    await signInWithSpotify();
+    await signInWithSpotify(redirectPath);
   };
 
   return (
@@ -59,7 +62,25 @@ export default function AccessDeniedPage() {
             Access Denied
           </CardTitle>
           <p className="text-muted-foreground">
-            You need to be logged in to access this page
+            You need to be logged in to access{" "}
+            <span className="font-medium">
+              {redirectPath === "/dashboard" && "Dashboard"}
+              {redirectPath === "/top-tracks" && "Top Tracks"}
+              {redirectPath === "/top-artists" && "Top Artists"}
+              {redirectPath === "/playlists" && "My Playlists"}
+              {redirectPath === "/profile" && "Profile"}
+              {redirectPath === "/embed" && "Embed Generator"}
+              {redirectPath === "/statistics" && "Statistics"}
+              {![
+                "/dashboard",
+                "/top-tracks",
+                "/top-artists",
+                "/playlists",
+                "/profile",
+                "/embed",
+                "/statistics",
+              ].includes(redirectPath) && "this page"}
+            </span>
           </p>
         </CardHeader>
 
